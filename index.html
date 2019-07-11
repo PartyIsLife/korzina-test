@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<script src="phaser.min.js"></script>
+
+</head>
+<body>
+<script>
+    var bomb;
+    var food;
+    var basketz;
+    var vgs;
+    var score = 0;
+    var speed = 300;
+    var raund = 0;
+    var life = 3;
+    var game = new Phaser.Game(
+            window.innerWidth - 30, window.innerHeight - 30, Phaser.CANVAS, null, {preload:preload, create:create, update:update});
+    function preload() {
+        game.load.image('fon','white.png');//ФОН
+        game.load.image('fruit','apple.png');//ЯБЛОКО
+        game.load.image('basket','basket.png');//КОРЗИНА
+        game.load.image('bomb','bomb-4.png');//БОМБА
+        game.load.spritesheet('vzryv1', 'vzryv.png')
+
+    }
+    function create() {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.add.tileSprite(1,1,game.width,game.height,'fon');//фон
+    basketz = game.add.sprite(game.width / 2, game.height / 2 + 50, 'basket');//Корзина
+    basketz.anchor.set(0.5);
+    game.physics.enable(basketz,Phaser.Physics.ARCADE);
+    basketz.body.immovable = true;
+  zfood();
+
+
+    bombz = game.add.sprite(Math.floor(Math.random() * game.width), 5, 'bomb');//Bomb
+    game.physics.enable(bombz, Phaser.Physics.ARCADE);
+    bombz.body.velocity.set(0, speed + 10);
+    bombz.animations.add('animation',[0,1,2,3,4,5,6,7,8,9,10], 35);
+
+
+
+
+    text = game.add.text(game.width - 50, 20, '0');
+    life1 = game.add.text(50,20, '3')
+    }
+    function update() {
+  basketz.x = game.input.x || game.world.width * 0.5;
+
+  game.physics.arcade.collide(basketz, vgs, poimano);
+    game.physics.arcade.collide(basketz, bombz, bomba);
+
+    }
+
+
+    function zfood() {
+        vgs = game.add.group();
+        for(i=0;i<1;i++){
+                for (i1=0;i1<5;i1++){
+                    food = game.add.sprite(Math.floor(Math.random() * game.width),i*70,'fruit');
+                    game.physics.enable(food, Phaser.Physics.ARCADE);
+                    vgs.add(food);
+                    food.body.velocity.set(0,speed);
+                    food.checkWorldBounds = true;
+                    food.events.onOutOfBounds.add(
+                        function () {
+                        game.add.sprite(Math.floor(Math.random() * game.width),i*70,'fruit');
+                        game.physics.enable(food, Phaser.Physics.ARCADE);
+                        vgs.add(food);
+
+                        food.x = Math.floor(Math.random() * game.width);
+                        food.y = 0;
+                        speed = speed + 15;
+                        food.body.velocity.set(0,speed);
+                        }
+                    )
+
+                }
+            }
+    }
+    function poimano(basketz, food) {
+        score = score + 1;
+        text.text = score;
+        food.x = Math.floor(Math.random() * game.width);
+        food.y = 0;
+        speed = speed + 15;
+        food.body.velocity.set(0,speed);
+
+       }
+
+win1 ();
+    function bomba () {
+        bombz.animations.play('vzryv1');
+        life = life-1;
+        life1.text = life;
+        bombz.x = Math.floor(Math.random() * game.width);
+        bombz.y = 0;
+        speed = speed + 15;
+        bombz.body.velocity.set(0,speed);
+
+        loose1();
+
+    }
+
+    function win1() {
+        if (score == 2147483647){
+            alert('Вы выйграли!');
+    }
+    }
+    function loose1() {
+        if(life == 0 )
+            alert('Вы ПРОИГРАЛИ!')
+    }
+
+</script>
+</body>
+</html>
